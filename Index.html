@@ -1,0 +1,2911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a1628">
+<title>E-Cheque Ecosystem · Digital Check Ecosystem</title>
+<meta name="description" content="Patent-pending digital cheque infrastructure — Drawer, Beneficiary, and Bank Officer perspectives.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230a1628%22/><text x=%2216%22 y=%2223%22 font-family=%22serif%22 font-size=%2220%22 fill=%22%23d4af37%22 text-anchor=%22middle%22 font-weight=%22600%22>E</text></svg>">
+
+<style>
+/* =========================================================
+   E-CHEQUE ECOSYSTEM — DESIGN SYSTEM
+   Editorial luxury · Navy + Cream + Gold
+   Bloomberg Terminal meets Mercury Bank
+   ========================================================= */
+
+:root {
+  /* Brand */
+  --navy:           #0a1628;
+  --navy-2:         #142943;
+  --navy-3:         #1f3a5f;
+  --ink:            #0a1628;
+
+  /* Cream/paper base */
+  --cream:          #f8f5ee;
+  --cream-2:        #f1ece0;
+  --paper:          #fefcf7;
+
+  /* Gold accent (used sparingly — bank seal, key actions) */
+  --gold:           #c9a961;
+  --gold-deep:      #a98933;
+  --gold-soft:      #ede0bd;
+
+  /* Modern accent (sparingly used — active states, links) */
+  --accent:         #1e6f5c;       /* deep emerald — modern, trustworthy */
+  --accent-soft:    #d6ebe2;
+
+  /* Semantic */
+  --success:        #1e6f5c;
+  --success-soft:   #d6ebe2;
+  --warn:           #c08a2a;
+  --warn-soft:      #f5e8cc;
+  --danger:         #a23030;
+  --danger-soft:    #f3d8d8;
+  --info:           #2e5d8a;
+  --info-soft:      #d9e4f0;
+
+  /* Neutrals */
+  --line:           #e8e2d2;
+  --line-strong:    #d4ccb6;
+  --ink-soft:       #4a5468;
+  --ink-faint:      #8b8674;
+  --ink-faintest:   #b8b29a;
+
+  /* Type */
+  --font-display:   'Fraunces', Georgia, serif;
+  --font-body:      'Inter', system-ui, sans-serif;
+  --font-mono:      'JetBrains Mono', ui-monospace, monospace;
+  --font-ar:        'Tajawal', system-ui, sans-serif;
+
+  /* Spacing */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-7: 32px; --s-8: 40px;
+  --s-9: 48px; --s-10: 64px; --s-11: 96px;
+
+  /* Radii — restrained for banking gravitas */
+  --r-sm: 4px; --r-md: 6px; --r-lg: 10px; --r-xl: 14px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(10, 22, 40, 0.04);
+  --shadow-md:  0 2px 6px rgba(10, 22, 40, 0.06), 0 1px 2px rgba(10, 22, 40, 0.04);
+  --shadow-lg:  0 8px 20px rgba(10, 22, 40, 0.08), 0 2px 6px rgba(10, 22, 40, 0.04);
+  --shadow-xl:  0 24px 48px rgba(10, 22, 40, 0.12);
+
+  --header-h:       64px;
+  --gold-bar-h:     3px;
+  --rolebar-h:      48px;
+  --sidebar-w:      240px;
+}
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: 0; }
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--gold); color: var(--navy); }
+
+.mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.serif { font-family: var(--font-display); }
+.tabular { font-variant-numeric: tabular-nums; }
+.ar { font-family: var(--font-ar); direction: rtl; }
+
+/* =========================================================
+   LOADER
+   ========================================================= */
+.loader {
+  position: fixed; inset: 0;
+  background: var(--navy);
+  z-index: 9999;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--s-7);
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.loader-mark {
+  width: 80px; height: 80px;
+  border-radius: 12px;
+  background: var(--navy-2);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  border: 1px solid var(--gold-deep);
+}
+.loader-mark::before {
+  content: 'E'; font-family: var(--font-display); font-weight: 700;
+  font-size: 44px; color: var(--gold);
+  font-style: italic;
+}
+.loader-mark::after {
+  content: ''; position: absolute; inset: -4px;
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  opacity: 0.3;
+  animation: loader-pulse 2s ease-in-out infinite;
+}
+@keyframes loader-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.08); opacity: 0; }
+}
+
+.loader-brand {
+  text-align: center;
+  color: var(--cream);
+}
+.loader-title {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.loader-sub {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.loader-progress {
+  width: 280px; max-width: 80vw;
+}
+.loader-bar {
+  height: 2px; background: rgba(255,255,255,0.1);
+  border-radius: 1px; overflow: hidden;
+}
+.loader-fill {
+  height: 100%; background: var(--gold);
+  width: 0%;
+  transition: width 0.35s ease;
+}
+.loader-status {
+  margin-top: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  text-align: center;
+  min-height: 16px;
+}
+
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Header */
+.header {
+  height: var(--header-h);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center;
+  padding: 0 var(--s-7);
+  position: sticky; top: 0; z-index: 50;
+  gap: var(--s-7);
+}
+
+.brand {
+  display: flex; align-items: center; gap: var(--s-3);
+}
+.brand-mark {
+  width: 36px; height: 36px;
+  background: var(--navy);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.brand-mark::before {
+  content: 'E';
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--gold);
+  font-style: italic;
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1; }
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--navy);
+}
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.header-spacer { flex: 1; }
+
+.user-block {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding-right: var(--s-2);
+}
+.user-text {
+  text-align: right;
+  display: flex; flex-direction: column;
+  line-height: 1.15;
+}
+.user-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+}
+.user-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.user-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--gold-deep);
+}
+
+/* Gold bar */
+.gold-bar {
+  height: var(--gold-bar-h);
+  background: linear-gradient(90deg, var(--gold-deep) 0%, var(--gold) 50%, var(--gold-deep) 100%);
+}
+
+/* Role bar */
+.rolebar {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: var(--rolebar-h);
+  display: flex;
+  align-items: stretch;
+  padding: 0 var(--s-7);
+  gap: var(--s-1);
+  position: sticky; top: var(--header-h); z-index: 49;
+}
+.role-tab {
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: 0 var(--s-5);
+  font-size: 13px; font-weight: 500;
+  color: var(--ink-soft);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.role-tab:hover { color: var(--ink); }
+.role-tab.active {
+  color: var(--navy);
+  border-bottom-color: var(--gold);
+  font-weight: 600;
+}
+.role-tab-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--cream-2);
+  color: var(--ink-faint);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+.role-tab.active .role-tab-num {
+  background: var(--gold-soft);
+  color: var(--gold-deep);
+}
+
+/* Body */
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--paper);
+  border-right: 1px solid var(--line);
+  padding: var(--s-6) 0;
+  height: calc(100vh - var(--header-h) - var(--gold-bar-h) - var(--rolebar-h));
+  position: sticky;
+  top: calc(var(--header-h) + var(--gold-bar-h) + var(--rolebar-h));
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  padding: 0 var(--s-5) var(--s-5);
+}
+.sidebar-section + .sidebar-section { border-top: 1px solid var(--line); padding-top: var(--s-5); }
+
+.sidebar-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  padding: 0 var(--s-3);
+  margin-bottom: var(--s-3);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: var(--s-3);
+  width: 100%; text-align: left;
+  padding: 9px var(--s-3);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--ink-soft);
+  transition: all 0.12s;
+  margin-bottom: 1px;
+}
+.nav-item:hover {
+  background: var(--cream-2);
+  color: var(--ink);
+}
+.nav-item.active {
+  background: var(--navy);
+  color: var(--cream);
+  font-weight: 500;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-icon {
+  width: 16px; height: 16px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+
+/* Main content */
+.main {
+  padding: var(--s-7) var(--s-9);
+  min-width: 0;
+  background: var(--cream);
+}
+
+.spinner-container {
+  padding: var(--s-11) 0;
+  display: flex; flex-direction: column;
+  align-items: center; gap: var(--s-4);
+  color: var(--ink-faint);
+}
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--line);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================
+   PAGE HEADERS
+   ========================================================= */
+.page-head {
+  margin-bottom: var(--s-7);
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+}
+.page-head-text { flex: 1; min-width: 0; }
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  margin-bottom: var(--s-2);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.page-eyebrow::before {
+  content: ''; width: 16px; height: 1px;
+  background: var(--gold);
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--navy);
+  margin-bottom: var(--s-2);
+}
+.page-sub {
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 600px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.card:hover { border-color: var(--line-strong); }
+
+.card-header {
+  padding: var(--s-4) var(--s-6);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--navy);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.card-body { padding: var(--s-6); }
+.card-body-tight { padding: var(--s-4) var(--s-6); }
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+.stat {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--s-5) var(--s-6);
+  position: relative;
+  overflow: hidden;
+}
+.stat::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: var(--navy);
+  opacity: 0.08;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: var(--s-3);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+  line-height: 1;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.stat-currency {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.stat-meta {
+  margin-top: var(--s-3);
+  font-size: 12px;
+  color: var(--ink-soft);
+  display: flex; align-items: center; gap: 6px;
+}
+.stat-trend-up { color: var(--success); }
+.stat-trend-down { color: var(--danger); }
+
+.stat-accent::before { background: var(--gold); opacity: 1; height: 3px; }
+.stat-accent .stat-value { color: var(--gold-deep); }
+
+/* =========================================================
+   PROGRESS / METER BARS
+   ========================================================= */
+.meter {
+  height: 6px;
+  background: var(--cream-2);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.meter-fill {
+  height: 100%;
+  background: var(--navy);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.meter-fill.gold { background: var(--gold); }
+.meter-fill.success { background: var(--success); }
+.meter-fill.warn { background: var(--warn); }
+.meter-fill.danger { background: var(--danger); }
+
+.meter-row {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+.meter-row:last-child { border: 0; }
+.meter-row-label {
+  flex: 0 0 200px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.meter-row-bar { flex: 1; }
+.meter-row-value {
+  flex: 0 0 50px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  padding: var(--s-4) var(--s-5);
+  background: var(--cream-2);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.table td {
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  color: var(--ink);
+}
+.table tr:last-child td { border: 0; }
+.table tr:hover td { background: var(--cream); }
+
+/* =========================================================
+   BADGES & PILLS
+   ========================================================= */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.badge-success { background: var(--success-soft); color: var(--success); }
+.badge-success::before { background: var(--success); }
+.badge-warn    { background: var(--warn-soft);    color: var(--warn-deep, var(--warn)); }
+.badge-warn::before    { background: var(--warn); }
+.badge-danger  { background: var(--danger-soft);  color: var(--danger); }
+.badge-danger::before  { background: var(--danger); }
+.badge-info    { background: var(--info-soft);    color: var(--info); }
+.badge-info::before    { background: var(--info); }
+.badge-gold    { background: var(--gold-soft);    color: var(--gold-deep); }
+.badge-gold::before    { background: var(--gold); }
+
+.type-instant { background: var(--info-soft); color: var(--info); }
+.type-instant::before { background: var(--info); }
+.type-deferred { background: var(--gold-soft); color: var(--gold-deep); }
+.type-deferred::before { background: var(--gold); }
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field + .field { margin-top: var(--s-4); }
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  font-size: 14px;
+  color: var(--ink);
+  transition: all 0.12s;
+  font-feature-settings: "tnum" 1;
+}
+.input:hover, .select:hover, .textarea:hover {
+  border-color: var(--ink-faint);
+}
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(10, 22, 40, 0.06);
+}
+.input[readonly] {
+  background: var(--cream-2);
+  color: var(--ink-soft);
+  cursor: default;
+}
+.field-hint {
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition: all 0.12s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--navy);
+  color: var(--cream);
+  border-color: var(--navy);
+}
+.btn-primary:hover {
+  background: var(--navy-2);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-gold {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold-deep);
+  font-weight: 700;
+}
+.btn-gold:hover {
+  background: var(--gold-deep);
+  color: var(--cream);
+}
+.btn-ghost {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.btn-ghost:hover { border-color: var(--navy); background: var(--cream-2); }
+.btn-success { background: var(--success); color: white; border-color: var(--success); }
+.btn-success:hover { background: #155845; }
+.btn-danger { background: var(--paper); color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: var(--danger); color: white; }
+.btn-warn-outline { background: var(--paper); color: var(--warn); border-color: var(--warn); }
+.btn-warn-outline:hover { background: var(--warn); color: white; }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-block { width: 100%; }
+
+/* =========================================================
+   2-COLUMN LAYOUTS
+   ========================================================= */
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-6);
+}
+@media (max-width: 1100px) {
+  .split-2 { grid-template-columns: 1fr; }
+}
+
+.split-form-preview {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: var(--s-6);
+  align-items: start;
+}
+@media (max-width: 1200px) {
+  .split-form-preview { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   CHEQUE CARD VISUAL
+   ========================================================= */
+.cheque {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-md);
+}
+
+.cheque-head {
+  background: var(--navy);
+  color: var(--cream);
+  padding: var(--s-5) var(--s-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  position: relative;
+}
+.cheque-head::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-deep));
+}
+
+.cheque-head-left { display: flex; align-items: center; gap: var(--s-3); }
+.cheque-bank-mark {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  font-style: italic;
+}
+.cheque-bank-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.cheque-bank-ar {
+  font-family: var(--font-ar);
+  font-size: 11px;
+  color: rgba(255,255,255,0.65);
+  margin-top: 2px;
+  direction: rtl;
+}
+
+.cheque-head-right {
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.cheque-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cheque-pill.instant { background: rgba(46, 93, 138, 0.25); border-color: rgba(46, 93, 138, 0.5); color: #a8c4e3; }
+.cheque-pill.deferred { background: rgba(201, 169, 97, 0.25); border-color: rgba(201, 169, 97, 0.5); color: var(--gold); }
+.cheque-no {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+}
+
+.cheque-body { padding: var(--s-6); }
+
+.cheque-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--s-5);
+  margin-bottom: var(--s-5);
+}
+
+.cheque-field-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.cheque-field-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.cheque-field-value-big {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cheque-field-mono { font-family: var(--font-mono); }
+.cheque-field-blue { color: var(--info); }
+.cheque-field-ar { font-family: var(--font-ar); font-size: 12px; color: var(--ink-soft); margin-top: 2px; direction: rtl; }
+
+.cheque-amount {
+  background: var(--navy);
+  color: var(--cream);
+  border-radius: var(--r-md);
+  padding: var(--s-5) var(--s-6);
+  margin: var(--s-5) 0;
+  position: relative;
+  overflow: hidden;
+}
+.cheque-amount::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 80px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 97, 0.05));
+}
+.cheque-amount-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  margin-bottom: var(--s-2);
+}
+.cheque-amount-figure {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.cheque-amount-currency {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+}
+.cheque-amount-words {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  margin-top: var(--s-3);
+  line-height: 1.5;
+  font-style: italic;
+  font-family: var(--font-display);
+}
+.cheque-amount-words-ar {
+  font-family: var(--font-ar);
+  font-size: 11px;
+  color: rgba(255,255,255,0.65);
+  direction: rtl;
+  margin-top: 4px;
+  font-style: normal;
+}
+
+.cheque-divider {
+  height: 1px;
+  background: var(--line);
+  margin: var(--s-5) 0;
+  position: relative;
+}
+.cheque-divider::before {
+  content: '· · · · · · · · · · · · · · · · · ·';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  padding: 0 var(--s-3);
+  width: fit-content;
+  margin: 0 auto;
+  color: var(--ink-faintest);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.cheque-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-5);
+}
+
+.cheque-foot {
+  background: var(--cream-2);
+  border-top: 1px solid var(--line);
+  padding: var(--s-4) var(--s-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+.verify-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px;
+  border-radius: 100px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 600;
+}
+.verify-pill svg { width: 12px; height: 12px; }
+.cheque-hash {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.bank-seal {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px dashed var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.bank-seal-inner {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--gold-deep);
+  text-align: center;
+  line-height: 1;
+}
+.bank-seal-inner small {
+  display: block;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  font-style: normal;
+  font-weight: 500;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+  position: fixed;
+  bottom: var(--s-7);
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: var(--navy);
+  color: var(--cream);
+  padding: var(--s-3) var(--s-5);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-xl);
+  z-index: 9000;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid var(--gold-deep);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10, 22, 40, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--s-5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 8000;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--paper);
+  border-radius: var(--r-lg);
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  transform: scale(0.96);
+  transition: transform 0.2s ease;
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-head {
+  padding: var(--s-5) var(--s-6);
+  border-bottom: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.modal-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+.modal-close:hover { background: var(--cream-2); border-color: var(--line-strong); }
+.modal-body { padding: var(--s-6); overflow-y: auto; flex: 1; }
+.modal-foot {
+  padding: var(--s-4) var(--s-6);
+  border-top: 1px solid var(--line);
+  display: flex; gap: var(--s-3); justify-content: flex-end;
+}
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+.alert {
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-md);
+  border-left: 4px solid;
+  background: var(--paper);
+  display: flex; align-items: flex-start; gap: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+.alert-icon {
+  flex: 0 0 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.alert-content { flex: 1; }
+.alert-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.alert-msg { font-size: 12px; color: var(--ink-soft); }
+
+.alert-warn { border-color: var(--warn); background: var(--warn-soft); }
+.alert-warn .alert-icon { background: var(--warn); color: white; }
+.alert-success { border-color: var(--success); background: var(--success-soft); }
+.alert-success .alert-icon { background: var(--success); color: white; }
+.alert-info { border-color: var(--info); background: var(--info-soft); }
+.alert-info .alert-icon { background: var(--info); color: white; }
+
+/* =========================================================
+   CREDIT RATING
+   ========================================================= */
+.rating-display {
+  text-align: center;
+  padding: var(--s-7) var(--s-5);
+}
+.rating-grade {
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--success);
+  font-style: italic;
+}
+.rating-desc {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-top: var(--s-3);
+  font-style: italic;
+  font-family: var(--font-display);
+}
+.rating-pills {
+  display: flex; gap: 6px; justify-content: center;
+  margin-top: var(--s-5);
+}
+.rating-pill {
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  background: var(--cream-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+}
+.rating-pill.active {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+  transform: scale(1.15);
+  box-shadow: var(--shadow-md);
+}
+
+/* =========================================================
+   SECTOR CHART
+   ========================================================= */
+.sector-row {
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-3) 0;
+}
+.sector-name {
+  flex: 0 0 160px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.sector-bar { flex: 1; height: 22px; background: var(--cream-2); border-radius: var(--r-sm); overflow: hidden; }
+.sector-fill {
+  height: 100%;
+  display: flex; align-items: center; padding: 0 var(--s-3);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   IP WATERMARK
+   ========================================================= */
+.watermark {
+  position: fixed;
+  bottom: 6px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink-faintest);
+  letter-spacing: 0.05em;
+  z-index: 100;
+  pointer-events: none;
+  text-align: right;
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.4s ease-out both; }
+.fade-up-1 { animation: fade-up 0.4s 0.05s ease-out both; }
+.fade-up-2 { animation: fade-up 0.4s 0.1s ease-out both; }
+.fade-up-3 { animation: fade-up 0.4s 0.15s ease-out both; }
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-5 { gap: 20px; }
+.mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; } .mt-6 { margin-top: 24px; }
+.mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-5 { margin-bottom: 20px; } .mb-6 { margin-bottom: 24px; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.muted { color: var(--ink-soft); }
+.faint { color: var(--ink-faint); }
+
+/* Mobile */
+@media (max-width: 900px) {
+  .body { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: var(--s-5); }
+  .header { padding: 0 var(--s-4); }
+  .rolebar { padding: 0 var(--s-4); overflow-x: auto; }
+  .role-tab { padding: 0 var(--s-3); font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============== LOADER ============== -->
+<div class="loader" id="loader">
+  <div class="loader-mark"></div>
+  <div class="loader-brand">
+    <div class="loader-title">E-Cheque Ecosystem</div>
+    <div class="loader-sub">Digital Check Infrastructure</div>
+  </div>
+  <div class="loader-progress">
+    <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-status" id="loaderStatus">Initializing…</div>
+  </div>
+</div>
+
+<!-- ============== APP ============== -->
+<div class="app hidden" id="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <div class="brand-name">E-Cheque Ecosystem</div>
+        <div class="brand-sub">Digital Check Infrastructure · 2026</div>
+      </div>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="user-block">
+      <div class="user-text">
+        <div class="user-name" id="userName">—</div>
+        <div class="user-role" id="userRole">—</div>
+      </div>
+      <div class="user-avatar" id="userAvatar">A</div>
+    </div>
+  </header>
+
+  <div class="gold-bar"></div>
+
+  <!-- Role bar -->
+  <nav class="rolebar" id="rolebar">
+    <button class="role-tab active" data-role="drawer" onclick="switchRole('drawer')">
+      <span class="role-tab-num">01</span>
+      <span>Drawer</span>
+    </button>
+    <button class="role-tab" data-role="beneficiary" onclick="switchRole('beneficiary')">
+      <span class="role-tab-num">02</span>
+      <span>Beneficiary</span>
+    </button>
+    <button class="role-tab" data-role="bank" onclick="switchRole('bank')">
+      <span class="role-tab-num">03</span>
+      <span>Bank Officer</span>
+    </button>
+  </nav>
+
+  <!-- Body -->
+  <div class="body">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main" id="main"></main>
+  </div>
+
+</div>
+
+<!-- ============== MODAL ============== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalTitle">Cheque Preview</div>
+        <div class="modal-sub" id="modalSub">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="downloadHTML()">Download HTML</button>
+      <button class="btn btn-ghost" onclick="window.print()">Print</button>
+      <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TOAST ============== -->
+<div class="toast" id="toast"></div>
+
+<!-- ============== WATERMARK ============== -->
+<div class="watermark">
+  © Digital Check Ecosystem · Abdelqader Nayef Mehyar<br>
+  Patent Pending · All Rights Reserved 2026
+</div>
+
+<script>
+/* =========================================================
+   E-CHEQUE ECOSYSTEM — APPLICATION LOGIC
+   ========================================================= */
+
+// ---------- STATE ----------
+const STATE = {
+  role: 'drawer',
+  panel: 'drawerDash',
+  currentCheque: null,
+};
+
+const ROLES = {
+  drawer: {
+    accountId: 'ACC-001',
+    name: 'Abed Mehyar Group',
+    nameAr: 'مجموعة عابد مهيار',
+    label: 'Drawer · Issuer',
+    avatar: 'AM',
+    defaultPanel: 'drawerDash',
+  },
+  beneficiary: {
+    accountId: 'ACC-002',
+    name: 'Yazan Mehyar Logistics',
+    nameAr: 'يزن مهيار للخدمات اللوجستية',
+    label: 'Beneficiary · Receiver',
+    avatar: 'YM',
+    defaultPanel: 'beneficiaryDash',
+  },
+  bank: {
+    accountId: 'ACC-BANK',
+    name: 'Jordan Commercial Bank',
+    nameAr: 'البنك التجاري الأردني',
+    label: 'Bank Officer',
+    avatar: 'JC',
+    defaultPanel: 'bankDash',
+  },
+};
+
+const NAV = {
+  drawer: [
+    { id: 'drawerDash',    label: 'Dashboard',         icon: 'home' },
+    { id: 'issueInstant',  label: 'Issue Instant',     icon: 'zap' },
+    { id: 'issueDeferred', label: 'Issue Deferred',    icon: 'calendar' },
+    { id: 'walletDrawer',  label: 'Cheque Wallet',     icon: 'wallet' },
+    { id: 'creditProfile', label: 'Credit Profile',    icon: 'star' },
+    { id: 'ceilingMgr',    label: 'Ceiling Manager',   icon: 'trend' },
+  ],
+  beneficiary: [
+    { id: 'beneficiaryDash',   label: 'Dashboard',          icon: 'home' },
+    { id: 'receivedCheques',   label: 'Received Cheques',   icon: 'inbox' },
+    { id: 'beneficiaryWallet', label: 'Wallet',             icon: 'wallet' },
+  ],
+  bank: [
+    { id: 'bankDash',     label: 'Dashboard',         icon: 'home' },
+    { id: 'approvals',    label: 'Approvals',         icon: 'check' },
+    { id: 'riskMonitor',  label: 'Risk Monitor',      icon: 'shield' },
+    { id: 'centralData',  label: 'Central Data',      icon: 'globe' },
+  ],
+};
+
+const ICONS = {
+  home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  zap: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+  calendar: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  wallet: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg>',
+  star: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  trend: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  inbox: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>',
+  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
+  shield: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  globe: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>',
+};
+
+// ---------- DEMO DATA ----------
+const DEMO = {
+  cheques: [
+    { cheque_no:'ECH-2026-08847', drawer_name:'Abed Mehyar Group', drawer_id:'ACC-001', beneficiary_name:'Yazan Mehyar Logistics', beneficiary_id:'ACC-002', amount:25000, type:'instant',  issue_date:'2026-04-28', maturity_date:'2026-04-28', purpose:'Logistics services Q1 2026',          status:'active',     hash:'A4B8C9D2E1F7' },
+    { cheque_no:'ECH-2026-08851', drawer_name:'Abed Mehyar Group', drawer_id:'ACC-001', beneficiary_name:'Sanad Mehyar Medical Services', beneficiary_id:'ACC-003', amount:75000, type:'deferred', issue_date:'2026-05-01', maturity_date:'2026-08-15', purpose:'Medical equipment supply contract',  status:'active',     hash:'F1E2D3C4B5A6' },
+    { cheque_no:'ECH-2026-08853', drawer_name:'Abed Mehyar Group', drawer_id:'ACC-001', beneficiary_name:'Yara Mehyar Accessories',       beneficiary_id:'ACC-004', amount:12500, type:'instant',  issue_date:'2026-04-22', maturity_date:'2026-04-22', purpose:'Accessories order — spring season',  status:'collected',  hash:'B7A8C9D0E1F2' },
+    { cheque_no:'ECH-2026-08858', drawer_name:'Abed Mehyar Group', drawer_id:'ACC-001', beneficiary_name:'Sewar Mehyar Rags & Textile',   beneficiary_id:'ACC-005', amount:48000, type:'deferred', issue_date:'2026-05-02', maturity_date:'2026-07-30', purpose:'Textile shipment — Q3',              status:'active',     hash:'C3D4E5F6A7B8' },
+    { cheque_no:'ECH-2026-08862', drawer_name:'Abed Mehyar Group', drawer_id:'ACC-001', beneficiary_name:'Yazan Mehyar Logistics',       beneficiary_id:'ACC-002', amount:32500, type:'deferred', issue_date:'2026-05-04', maturity_date:'2026-09-04', purpose:'Cross-border transport — H2 2026',  status:'pending',    hash:'D9E0F1A2B3C4' },
+  ],
+  ceiling: { total: 500000, used: 350000, available: 150000, utilization: 70 },
+  rating:  { grade: 'A+', criteria: [
+    { label: 'Ceiling utilization',     value: 92 },
+    { label: 'On-time payments',        value: 100 },
+    { label: 'Collection rate',         value: 96 },
+    { label: 'Counterparty diversity',  value: 88 },
+    { label: 'Bounce-rate history',     value: 100 },
+  ]},
+  approvals: [
+    { id: 'REQ-2026-0042', company: 'Sanad Mehyar Medical Services', currentCeiling: 200000, requestedCeiling: 350000, rating: 'A+', compliance: 100 },
+    { id: 'REQ-2026-0043', company: 'Yara Mehyar Accessories',       currentCeiling: 150000, requestedCeiling: 220000, rating: 'A',  compliance: 96 },
+  ],
+  bankDistribution: [
+    { grade: 'A+', percent: 42, color: 'var(--success)' },
+    { grade: 'A',  percent: 31, color: '#27AE60' },
+    { grade: 'B',  percent: 18, color: 'var(--gold)' },
+    { grade: 'C',  percent: 7,  color: 'var(--warn)' },
+    { grade: 'D',  percent: 2,  color: 'var(--danger)' },
+  ],
+  sectors: [
+    { name: 'Food & Beverage', percent: 35, color: 'var(--success)' },
+    { name: 'Medical',          percent: 28, color: '#2e5d8a' },
+    { name: 'Construction',     percent: 20, color: 'var(--gold-deep)' },
+    { name: 'Accessories',      percent: 12, color: '#7B61FF' },
+    { name: 'Textile',          percent: 5,  color: 'var(--warn)' },
+  ],
+};
+
+// ---------- UTILITY HELPERS ----------
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const $ = id => document.getElementById(id);
+
+function fmtMoney(n) {
+  if (n == null || isNaN(n)) return 'JD —';
+  return 'JD ' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+function fmtMoneyFull(n) {
+  if (n == null || isNaN(n)) return '—';
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+}
+function fmtDate(d) {
+  if (!d) return 'N/A';
+  const date = new Date(d);
+  if (isNaN(date)) return d;
+  const dd = String(date.getDate()).padStart(2,'0');
+  const mm = String(date.getMonth()+1).padStart(2,'0');
+  return `${dd}/${mm}/${date.getFullYear()}`;
+}
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+}
+
+function statusBadge(status) {
+  const map = {
+    active:    { cls: 'badge-success', label: 'Active' },
+    collected: { cls: 'badge-info',    label: 'Collected' },
+    deposited: { cls: 'badge-info',    label: 'Deposited' },
+    pending:   { cls: 'badge-warn',    label: 'Pending' },
+    bounced:   { cls: 'badge-danger',  label: 'Bounced' },
+  };
+  const m = map[status] || { cls: 'badge-info', label: status || '—' };
+  return `<span class="badge ${m.cls}">${m.label}</span>`;
+}
+function typeBadge(t) {
+  if (t === 'instant') return '<span class="badge type-instant">Instant</span>';
+  if (t === 'deferred') return '<span class="badge type-deferred">Deferred</span>';
+  return `<span class="badge">${t}</span>`;
+}
+function ratingColor(g) {
+  return ({ 'A+':'var(--success)', 'A':'#27AE60', 'B':'var(--gold-deep)', 'C':'var(--warn)', 'D':'var(--danger)' })[g] || 'var(--ink-faint)';
+}
+
+// ---------- NUMBER → WORDS ----------
+const ONES_EN = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const TENS_EN = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function below1000En(n) {
+  if (n < 20) return ONES_EN[n];
+  if (n < 100) return TENS_EN[Math.floor(n/10)] + (n%10 ? ' ' + ONES_EN[n%10] : '');
+  return ONES_EN[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + below1000En(n%100) : '');
+}
+function numberToWords(n) {
+  n = Math.floor(Number(n) || 0);
+  if (n === 0) return 'Zero';
+  if (n < 1000) return below1000En(n);
+  if (n < 1000000) return below1000En(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + below1000En(n%1000) : '');
+  return below1000En(Math.floor(n/1000000)) + ' Million' + (n%1000000 ? ' ' + numberToWords(n%1000000) : '');
+}
+
+const ONES_AR = ['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة','أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
+const TENS_AR = ['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
+const HUND_AR = { 1:'مئة',2:'مئتان',3:'ثلاثمئة',4:'أربعمئة',5:'خمسمئة',6:'ستمئة',7:'سبعمئة',8:'ثمانمئة',9:'تسعمئة' };
+function below100Ar(n) {
+  if (n < 20) return ONES_AR[n];
+  const u = n%10, t = Math.floor(n/10);
+  return u ? `${ONES_AR[u]} و${TENS_AR[t]}` : TENS_AR[t];
+}
+function below1000Ar(n) {
+  if (n < 100) return below100Ar(n);
+  const h = Math.floor(n/100), r = n%100;
+  return HUND_AR[h] + (r ? ' و' + below100Ar(r) : '');
+}
+function toWordsArabic(n) {
+  n = Math.floor(Number(n) || 0);
+  if (n === 0) return 'صفر';
+  if (n < 1000) return below1000Ar(n);
+  if (n < 1000000) {
+    const t = Math.floor(n/1000), r = n%1000;
+    let w;
+    if (t === 1) w = 'ألف';
+    else if (t === 2) w = 'ألفان';
+    else if (t >=3 && t <= 10) w = below1000Ar(t) + ' آلاف';
+    else w = below1000Ar(t) + ' ألف';
+    return w + (r ? ' و' + below1000Ar(r) : '');
+  }
+  const m = Math.floor(n/1000000), r = n%1000000;
+  let w;
+  if (m === 1) w = 'مليون';
+  else if (m === 2) w = 'مليونان';
+  else if (m >=3 && m <=10) w = below1000Ar(m) + ' ملايين';
+  else w = below1000Ar(m) + ' مليون';
+  return w + (r ? ' و' + toWordsArabic(r) : '');
+}
+
+// ---------- TOAST ----------
+let toastTimer = null;
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ---------- LOADER ----------
+async function bootLoader() {
+  const steps = [
+    { pct: 20,  msg: 'Connecting to database…' },
+    { pct: 45,  msg: 'Loading accounts…' },
+    { pct: 65,  msg: 'Initializing security…' },
+    { pct: 85,  msg: 'Verifying signatures…' },
+    { pct: 100, msg: 'System ready ✓' },
+  ];
+  for (const s of steps) {
+    $('loaderFill').style.width = s.pct + '%';
+    $('loaderStatus').textContent = s.msg;
+    await sleep(380);
+  }
+  await sleep(150);
+  $('loader').classList.add('hidden');
+  $('app').classList.remove('hidden');
+}
+
+// ---------- ROLE ----------
+function switchRole(role) {
+  if (!ROLES[role]) return;
+  STATE.role = role;
+  const r = ROLES[role];
+  $('userName').textContent = r.name;
+  $('userRole').textContent = r.label;
+  $('userAvatar').textContent = r.avatar;
+  document.querySelectorAll('.role-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.role === role);
+  });
+  renderSidebar();
+  navigate(r.defaultPanel);
+}
+
+// ---------- SIDEBAR ----------
+function renderSidebar() {
+  const items = NAV[STATE.role] || [];
+  const html = `
+    <div class="sidebar-section">
+      <div class="sidebar-label">${STATE.role === 'bank' ? 'Bank Operations' : (STATE.role === 'drawer' ? 'Issuance' : 'Receiving')}</div>
+      ${items.map(it => `
+        <button class="nav-item ${it.id === STATE.panel ? 'active' : ''}" onclick="navigate('${it.id}')">
+          <span class="nav-icon">${ICONS[it.icon] || ''}</span>
+          <span>${it.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  $('sidebar').innerHTML = html;
+}
+
+// ---------- NAVIGATE ----------
+async function navigate(panelId) {
+  STATE.panel = panelId;
+  renderSidebar();
+  const main = $('main');
+  main.innerHTML = '<div class="spinner-container"><div class="spinner"></div><div>Loading…</div></div>';
+  await sleep(120);
+  await renderPanel(panelId);
+}
+
+async function renderPanel(panelId) {
+  const map = {
+    drawerDash: renderDrawerDash,
+    issueInstant: () => renderIssueForm('instant'),
+    issueDeferred: () => renderIssueForm('deferred'),
+    walletDrawer: () => renderWallet('drawer'),
+    creditProfile: renderCredit,
+    ceilingMgr: renderCeilingMgr,
+    beneficiaryDash: renderBeneficiaryDash,
+    receivedCheques: renderReceived,
+    beneficiaryWallet: () => renderWallet('beneficiary'),
+    bankDash: renderBankDash,
+    approvals: renderApprovals,
+    riskMonitor: renderRiskMonitor,
+    centralData: renderCentralData,
+  };
+  const fn = map[panelId];
+  if (!fn) {
+    $('main').innerHTML = `<div class="page-head"><div class="page-head-text"><div class="page-eyebrow">404</div><h1 class="page-title">Panel not found</h1></div></div>`;
+    return;
+  }
+  await fn();
+  attachHandlers(panelId);
+}
+
+function attachHandlers(panelId) {
+  if (panelId === 'issueInstant' || panelId === 'issueDeferred') {
+    ['fAmount','fBene','fPurpose','fMaturity'].forEach(id => {
+      const el = $(id);
+      if (el) {
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('change', updatePreview);
+      }
+    });
+    updatePreview();
+  }
+}
+
+// ---------- PAGE HEAD HELPER ----------
+function pageHead(eyebrow, title, sub) {
+  return `
+    <div class="page-head fade-up">
+      <div class="page-head-text">
+        <div class="page-eyebrow">${eyebrow}</div>
+        <h1 class="page-title">${title}</h1>
+        ${sub ? `<p class="page-sub">${sub}</p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ---------- DRAWER : DASHBOARD ----------
+async function renderDrawerDash() {
+  const c = DEMO.ceiling;
+  const recent = DEMO.cheques.slice(0, 5);
+  $('main').innerHTML = `
+    ${pageHead('Drawer · Overview', 'Dashboard', 'Issuance overview, credit position, and recent cheque activity.')}
+
+    <div class="card mb-6 fade-up-1">
+      <div class="card-header">
+        <div class="card-title">Credit Ceiling Position</div>
+        <div class="badge badge-gold">A+ Rating</div>
+      </div>
+      <div class="card-body">
+        <div class="flex items-center gap-5 mb-4">
+          <div style="flex:1;">
+            <div class="meter" style="height:10px;">
+              <div class="meter-fill" style="width:${c.utilization}%; background: linear-gradient(90deg, var(--gold-deep), var(--gold));"></div>
+            </div>
+          </div>
+          <div class="mono tabular" style="font-size: 13px; font-weight: 600;">${c.utilization}%</div>
+        </div>
+        <div class="flex justify-between" style="font-size: 12px; color: var(--ink-soft);">
+          <span><strong class="mono">${fmtMoney(c.used)}</strong> used of <strong class="mono">${fmtMoney(c.total)}</strong></span>
+          <span><strong class="mono" style="color: var(--success);">${fmtMoney(c.available)}</strong> available</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid fade-up-2">
+      <div class="stat">
+        <div class="stat-label">Active cheques</div>
+        <div class="stat-value">3</div>
+        <div class="stat-meta">Currently in circulation</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total deferred value</div>
+        <div class="stat-value">155<span class="stat-currency">K JOD</span></div>
+        <div class="stat-meta">Maturing within 90 days</div>
+      </div>
+      <div class="stat stat-accent">
+        <div class="stat-label">Credit Rating</div>
+        <div class="stat-value serif" style="font-style:italic;">A+</div>
+        <div class="stat-meta stat-trend-up">↑ Top tier</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Bounced cheques</div>
+        <div class="stat-value" style="color:var(--success);">0</div>
+        <div class="stat-meta">Lifetime · perfect record</div>
+      </div>
+    </div>
+
+    <div class="card fade-up-3">
+      <div class="card-header">
+        <div class="card-title">Recent Issued Cheques</div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('walletDrawer')">View all →</button>
+      </div>
+      <div class="table-wrap" style="border:0; border-radius:0;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cheque No.</th>
+              <th>Beneficiary</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Maturity</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recent.map(c => `
+              <tr>
+                <td class="mono" style="font-weight:600;">${c.cheque_no}</td>
+                <td>${escapeHtml(c.beneficiary_name)}</td>
+                <td class="mono tabular" style="font-weight:600;">${fmtMoney(c.amount)}</td>
+                <td>${typeBadge(c.type)}</td>
+                <td class="mono" style="font-size:12px;">${fmtDate(c.maturity_date)}</td>
+                <td>${statusBadge(c.status)}</td>
+                <td><button class="btn btn-ghost btn-sm" onclick='previewCheque(${JSON.stringify(JSON.stringify(c))})'>View</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- DRAWER : ISSUE FORM ----------
+function renderIssueForm(type) {
+  const isDeferred = type === 'deferred';
+  const c = DEMO.ceiling;
+  const today = new Date().toISOString().split('T')[0];
+  const maturityDefault = new Date(Date.now() + 90*86400000).toISOString().split('T')[0];
+
+  const beneficiaries = [
+    { id: 'ACC-002', name: 'Yazan Mehyar Logistics',         nameAr: 'يزن مهيار للخدمات اللوجستية' },
+    { id: 'ACC-003', name: 'Sanad Mehyar Medical Services',  nameAr: 'سند مهيار للخدمات الطبية' },
+    { id: 'ACC-004', name: 'Yara Mehyar Accessories',         nameAr: 'يارا مهيار للإكسسوارات' },
+    { id: 'ACC-005', name: 'Sewar Mehyar Rags & Textile',    nameAr: 'سوار مهيار للأقمشة' },
+  ];
+
+  $('main').innerHTML = `
+    ${pageHead(
+      isDeferred ? 'Drawer · Issuance' : 'Drawer · Issuance',
+      isDeferred ? 'Issue Deferred Cheque' : 'Issue Instant Cheque',
+      isDeferred
+        ? 'Future-dated cheque secured against your credit ceiling. Cleared on maturity date.'
+        : 'Real-time cheque with funds frozen on issuance. Cleared upon presentation.'
+    )}
+
+    ${isDeferred ? `
+      <div class="card mb-6 fade-up-1">
+        <div class="card-body" style="padding: var(--s-5) var(--s-6);">
+          <div class="flex justify-between items-center mb-3">
+            <span style="font-size:12px; font-family:var(--font-mono); color:var(--ink-faint); letter-spacing:0.1em; text-transform:uppercase;">Ceiling Utilization</span>
+            <span class="mono" style="font-size:12px; color:var(--ink-soft);">${fmtMoney(c.used)} / ${fmtMoney(c.total)}</span>
+          </div>
+          <div class="meter" style="height:8px;">
+            <div class="meter-fill gold" style="width:${c.utilization}%;"></div>
+          </div>
+          <div style="margin-top:var(--s-2); font-size:12px; color:var(--success); font-weight:600;">
+            ${fmtMoney(c.available)} available for new deferred cheques
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="split-form-preview fade-up-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Cheque Details</div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label class="label" for="fBene">Beneficiary</label>
+            <select class="select" id="fBene">
+              <option value="">Select a beneficiary…</option>
+              ${beneficiaries.map(b => `<option value="${b.id}|${b.name}|${b.nameAr}">${b.name}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="fAmount">Amount <span class="mono faint" style="font-weight:400;">JD</span></label>
+            <input class="input mono" type="number" id="fAmount" value="25000" min="1" max="9999999" step="1">
+            <div class="field-hint" id="fAmountHint">—</div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="fIssue">Issue date</label>
+            <input class="input mono" type="date" id="fIssue" value="${today}" readonly>
+          </div>
+
+          ${isDeferred ? `
+            <div class="field">
+              <label class="label" for="fMaturity">Maturity date</label>
+              <input class="input mono" type="date" id="fMaturity" value="${maturityDefault}" min="${today}">
+            </div>
+          ` : `<input type="hidden" id="fMaturity" value="${today}">`}
+
+          <div class="field">
+            <label class="label" for="fPurpose">Purpose</label>
+            <input class="input" type="text" id="fPurpose" placeholder="e.g., Logistics services Q2 2026" maxlength="120">
+          </div>
+
+          <div class="field">
+            <label class="label" for="fPin">PIN <span class="faint" style="font-weight:400;">(demo: any 4 digits)</span></label>
+            <input class="input mono" type="password" id="fPin" placeholder="••••" maxlength="4">
+          </div>
+
+          <button class="btn btn-primary btn-block mt-5" onclick="submitCheque('${type}')">
+            ${isDeferred ? 'Issue Deferred Cheque' : 'Issue Instant Cheque'}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="cheque" id="livePreview">
+          <div class="cheque-head">
+            <div class="cheque-head-left">
+              <div class="cheque-bank-mark">JC</div>
+              <div>
+                <div class="cheque-bank-name">Jordan Commercial Bank</div>
+                <div class="cheque-bank-ar">البنك التجاري الأردني</div>
+              </div>
+            </div>
+            <div class="cheque-head-right">
+              <span class="cheque-pill ${isDeferred ? 'deferred' : 'instant'}">${isDeferred ? 'Deferred' : 'Instant'}</span>
+              <span class="cheque-no">ECH-2026-•••••</span>
+            </div>
+          </div>
+          <div class="cheque-body">
+            <div class="cheque-grid-3">
+              <div>
+                <div class="cheque-field-label">Drawer</div>
+                <div class="cheque-field-value">Abed Mehyar Group</div>
+                <div class="cheque-field-ar">مجموعة عابد مهيار</div>
+              </div>
+              <div>
+                <div class="cheque-field-label">${isDeferred ? 'Maturity' : 'Issue Date'}</div>
+                <div class="cheque-field-value cheque-field-value-big cheque-field-mono ${isDeferred ? 'cheque-field-blue' : ''}" id="prevMaturity">—</div>
+              </div>
+              <div>
+                <div class="cheque-field-label">Issue Date</div>
+                <div class="cheque-field-value cheque-field-mono" id="prevIssue">${fmtDate(today)}</div>
+              </div>
+            </div>
+
+            <div class="cheque-amount">
+              <div class="cheque-amount-label">Amount · JOD</div>
+              <div class="cheque-amount-figure">
+                <span id="prevAmt">25,000</span>
+                <span class="cheque-amount-currency">JOD</span>
+              </div>
+              <div class="cheque-amount-words" id="prevWords">—</div>
+              <div class="cheque-amount-words cheque-amount-words-ar" id="prevWordsAr">—</div>
+            </div>
+
+            <div class="cheque-divider"></div>
+
+            <div class="cheque-grid-2">
+              <div>
+                <div class="cheque-field-label">Beneficiary</div>
+                <div class="cheque-field-value cheque-field-value-big" id="prevBene">—</div>
+                <div class="cheque-field-ar" id="prevBeneAr">—</div>
+              </div>
+              <div>
+                <div class="cheque-field-label">Purpose</div>
+                <div class="cheque-field-value" id="prevPurpose" style="font-weight:500;">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cheque-foot">
+            <span class="verify-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+              Verified · موثّق
+            </span>
+            <span class="cheque-hash">SHA-256 · live preview</span>
+            <div class="bank-seal">
+              <div class="bank-seal-inner">JCB<small>VERIFIED</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--s-3); font-size:11px; color:var(--ink-faint); font-family:var(--font-mono); text-align:center; letter-spacing:0.05em;">
+          LIVE PREVIEW · UPDATES AS YOU TYPE
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updatePreview() {
+  const amt = parseFloat($('fAmount')?.value) || 0;
+  const beneVal = $('fBene')?.value || '';
+  const purpose = $('fPurpose')?.value || '';
+  const maturity = $('fMaturity')?.value || '';
+
+  if ($('prevAmt')) $('prevAmt').textContent = Number(amt).toLocaleString('en-US');
+  if ($('prevWords')) $('prevWords').textContent = amt ? numberToWords(amt) + ' Jordanian Dinars Only' : '—';
+  if ($('prevWordsAr')) $('prevWordsAr').textContent = amt ? toWordsArabic(amt) + ' دينار أردني لا غير' : '—';
+  if ($('fAmountHint')) $('fAmountHint').textContent = amt ? numberToWords(amt) + ' Jordanian Dinars Only' : 'Amount in words appears here';
+
+  if (beneVal && $('prevBene')) {
+    const [, name, nameAr] = beneVal.split('|');
+    $('prevBene').textContent = name || '—';
+    if ($('prevBeneAr')) $('prevBeneAr').textContent = nameAr || '';
+  }
+  if ($('prevPurpose')) $('prevPurpose').textContent = purpose || '—';
+  if ($('prevMaturity')) $('prevMaturity').textContent = fmtDate(maturity);
+}
+
+async function submitCheque(type) {
+  const amt = parseFloat($('fAmount')?.value);
+  const beneVal = $('fBene')?.value;
+  const maturity = $('fMaturity')?.value;
+  const purpose = $('fPurpose')?.value || '';
+
+  if (!amt || amt <= 0) { showToast('⚠ Please enter a valid amount.'); return; }
+  if (!beneVal) { showToast('⚠ Please select a beneficiary.'); return; }
+  if (type === 'deferred' && !maturity) { showToast('⚠ Maturity date required.'); return; }
+
+  const [beneId, beneName, beneAr] = beneVal.split('|');
+
+  // Generate cheque number
+  const seq = String(Math.floor(10000 + Math.random()*90000));
+  const chequeNo = `ECH-2026-${seq}`;
+
+  const cheque = {
+    cheque_no: chequeNo,
+    drawer_name: 'Abed Mehyar Group',
+    drawer_ar: 'مجموعة عابد مهيار',
+    drawer_id: 'ACC-001',
+    beneficiary_name: beneName,
+    beneficiary_ar: beneAr,
+    beneficiary_id: beneId,
+    amount: amt,
+    type: type,
+    issue_date: new Date().toISOString().split('T')[0],
+    maturity_date: type === 'instant' ? new Date().toISOString().split('T')[0] : maturity,
+    purpose: purpose || '—',
+    status: 'active',
+    hash: Array.from({length:12}, () => '0123456789ABCDEF'[Math.floor(Math.random()*16)]).join(''),
+  };
+
+  // Add to demo data so it shows up in wallets
+  DEMO.cheques.unshift(cheque);
+
+  showToast(`✓ Cheque ${chequeNo} issued`);
+  await sleep(800);
+  showChequePreview(cheque);
+}
+
+// ---------- WALLET (drawer or beneficiary) ----------
+let walletFilter = 'all';
+async function renderWallet(role) {
+  const isDrawer = role === 'drawer';
+  const allCheques = DEMO.cheques;
+
+  $('main').innerHTML = `
+    ${pageHead(
+      isDrawer ? 'Drawer · Wallet' : 'Beneficiary · Wallet',
+      'Cheque Wallet',
+      isDrawer ? 'All cheques you have issued. Filter by status, type, or direction.' : 'All cheques you have received. Track liquidity from incoming flow.'
+    )}
+
+    ${!isDrawer ? `
+      <div class="card mb-6 fade-up-1" style="border-color: var(--gold);">
+        <div class="card-body" style="background: linear-gradient(135deg, var(--gold-soft), var(--cream));">
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.14em; color:var(--gold-deep); text-transform:uppercase;">Liquidity Multiplier · Active</div>
+              <div class="serif" style="font-size:18px; font-weight:600; color:var(--navy); margin-top:6px;">Incoming cheques boost your ceiling</div>
+            </div>
+            <div class="badge badge-gold">+ ${fmtMoney(57500)}</div>
+          </div>
+          <div class="meter" style="height:10px;">
+            <div class="meter-fill gold" style="width:62%;"></div>
+          </div>
+          <div class="flex justify-between mt-3" style="font-size:12px; color:var(--ink-soft);">
+            <span>Original ceiling: <strong class="mono">${fmtMoney(150000)}</strong></span>
+            <span>Boosted total: <strong class="mono" style="color:var(--gold-deep);">${fmtMoney(207500)}</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid mb-6 fade-up-2">
+        <div class="stat">
+          <div class="stat-label">Added to ceiling</div>
+          <div class="stat-value mono" style="color:var(--gold-deep);">${fmtMoney(57500)}</div>
+          <div class="stat-meta">From incoming deferred</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Added to balance</div>
+          <div class="stat-value mono" style="color:var(--success);">${fmtMoney(25000)}</div>
+          <div class="stat-meta">From cleared instant</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Incoming cheques</div>
+          <div class="stat-value">3</div>
+          <div class="stat-meta">Active in queue</div>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="card fade-up-3">
+      <div class="card-header">
+        <div class="card-title">Cheque Ledger</div>
+        <div class="flex gap-2">
+          <button class="btn btn-sm ${walletFilter==='all'?'btn-primary':'btn-ghost'}" onclick="filterWallet('all','${role}')">All</button>
+          <button class="btn btn-sm ${walletFilter==='deferred'?'btn-primary':'btn-ghost'}" onclick="filterWallet('deferred','${role}')">Deferred</button>
+          <button class="btn btn-sm ${walletFilter==='instant'?'btn-primary':'btn-ghost'}" onclick="filterWallet('instant','${role}')">Instant</button>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:0; border-radius:0;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cheque No.</th>
+              <th>${isDrawer ? 'Beneficiary' : 'Drawer'}</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Maturity</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(walletFilter==='all' ? allCheques : allCheques.filter(c => c.type===walletFilter)).map(c => `
+              <tr>
+                <td class="mono" style="font-weight:600;">${c.cheque_no}</td>
+                <td>${escapeHtml(isDrawer ? c.beneficiary_name : c.drawer_name)}</td>
+                <td class="mono tabular" style="font-weight:600;">${fmtMoney(c.amount)}</td>
+                <td>${typeBadge(c.type)}</td>
+                <td class="mono" style="font-size:12px;">${fmtDate(c.maturity_date)}</td>
+                <td>${statusBadge(c.status)}</td>
+                <td>
+                  <div class="flex gap-2">
+                    <button class="btn btn-ghost btn-sm" onclick='previewCheque(${JSON.stringify(JSON.stringify(c))})'>View</button>
+                    ${!isDrawer && c.status === 'active' ? `<button class="btn btn-success btn-sm" onclick="depositCheque('${c.cheque_no}')">Deposit</button>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+function filterWallet(f, role) { walletFilter = f; renderWallet(role); }
+
+// ---------- DRAWER : CREDIT PROFILE ----------
+async function renderCredit() {
+  const r = DEMO.rating;
+  $('main').innerHTML = `
+    ${pageHead('Drawer · Credit', 'Credit Profile', 'Live credit rating across five behavioral criteria. Updates in real-time as cheques clear.')}
+
+    <div class="split-2 fade-up-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Current Rating</div>
+          <div class="badge badge-success">Top Tier</div>
+        </div>
+        <div class="card-body">
+          <div class="rating-display">
+            <div class="rating-grade">${r.grade}</div>
+            <div class="rating-desc">"Excellent — eligible for full ceiling and preferential rates."</div>
+          </div>
+          <div class="rating-pills">
+            ${['A+','A','B','C','D'].map(g => `
+              <div class="rating-pill ${g===r.grade?'active':''}" style="${g===r.grade?'background:'+ratingColor(g)+'; border-color:'+ratingColor(g)+';':''}">${g}</div>
+            `).join('')}
+          </div>
+          <div style="text-align:center; margin-top:var(--s-5); padding-top:var(--s-5); border-top:1px solid var(--line);">
+            <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.12em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:6px;">Liquidity Multiplier</div>
+            <div class="serif" style="font-size:20px; font-weight:600; color:var(--gold-deep); font-style:italic;">100% added to clients' ceiling</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Rating Criteria</div>
+        </div>
+        <div class="card-body">
+          ${r.criteria.map(c => `
+            <div class="meter-row">
+              <div class="meter-row-label">${c.label}</div>
+              <div class="meter-row-bar">
+                <div class="meter">
+                  <div class="meter-fill ${c.value>=90?'success':(c.value>=75?'gold':'warn')}" style="width:${c.value}%;"></div>
+                </div>
+              </div>
+              <div class="meter-row-value">${c.value}%</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- DRAWER : CEILING MGR ----------
+async function renderCeilingMgr() {
+  const c = DEMO.ceiling;
+  $('main').innerHTML = `
+    ${pageHead('Drawer · Ceiling', 'Ceiling Manager', 'Monitor utilization and request increases from the bank.')}
+
+    <div class="stats-grid fade-up-1">
+      <div class="stat">
+        <div class="stat-label">Total ceiling</div>
+        <div class="stat-value mono">${fmtMoney(c.total).replace('JD ','')}<span class="stat-currency">JOD</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Used</div>
+        <div class="stat-value mono" style="color:var(--gold-deep);">${fmtMoney(c.used).replace('JD ','')}<span class="stat-currency">JOD</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Available</div>
+        <div class="stat-value mono" style="color:var(--success);">${fmtMoney(c.available).replace('JD ','')}<span class="stat-currency">JOD</span></div>
+      </div>
+      <div class="stat stat-accent">
+        <div class="stat-label">Utilization</div>
+        <div class="stat-value">${c.utilization}<span class="stat-currency">%</span></div>
+      </div>
+    </div>
+
+    <div class="card fade-up-2" style="max-width: 640px;">
+      <div class="card-header">
+        <div class="card-title">Request Ceiling Increase</div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="label">Current ceiling</label>
+          <input class="input mono" id="curCeil" value="${fmtMoney(c.total)}" readonly>
+        </div>
+        <div class="field">
+          <label class="label" for="reqCeil">Requested ceiling <span class="faint" style="font-weight:400;">(in JOD)</span></label>
+          <input class="input mono" type="number" id="reqCeil" value="750000" min="${c.total + 1}" max="9999999" step="50000">
+        </div>
+        <div class="field">
+          <label class="label" for="reqJustify">Business justification</label>
+          <input class="input" type="text" id="reqJustify" placeholder="e.g., Q3 expansion of supplier network" maxlength="200">
+        </div>
+        <button class="btn btn-primary mt-5" onclick="requestCeiling()">Submit Request</button>
+      </div>
+    </div>
+  `;
+}
+async function requestCeiling() {
+  const v = parseFloat($('reqCeil')?.value);
+  const c = DEMO.ceiling;
+  if (!v || v <= c.total) { showToast('⚠ Requested ceiling must exceed current.'); return; }
+  showToast('✓ Request submitted. Bank will review within 24 hours.');
+}
+
+// ---------- BENEFICIARY : DASHBOARD ----------
+async function renderBeneficiaryDash() {
+  const incoming = DEMO.cheques.filter(c => c.beneficiary_id === 'ACC-002');
+  const latest = incoming[0];
+
+  $('main').innerHTML = `
+    ${pageHead('Beneficiary · Overview', 'Dashboard', 'Incoming cheque activity and liquidity position.')}
+
+    <div class="stats-grid fade-up-1">
+      <div class="stat">
+        <div class="stat-label">Active incoming</div>
+        <div class="stat-value">${incoming.filter(c => c.status==='active').length}</div>
+        <div class="stat-meta">Awaiting maturity</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total incoming value</div>
+        <div class="stat-value mono">${fmtMoney(incoming.reduce((s,c) => s + c.amount, 0)).replace('JD ','')}<span class="stat-currency">JOD</span></div>
+      </div>
+      <div class="stat stat-accent">
+        <div class="stat-label">Added to ceiling</div>
+        <div class="stat-value mono">${fmtMoney(57500).replace('JD ','')}<span class="stat-currency">JOD</span></div>
+        <div class="stat-meta">Liquidity multiplier</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Pending risks</div>
+        <div class="stat-value" style="color:var(--success);">0</div>
+        <div class="stat-meta">All counterparties A-rated</div>
+      </div>
+    </div>
+
+    ${latest ? `
+      <div class="card fade-up-2 mb-6">
+        <div class="card-header">
+          <div class="card-title">Latest Incoming Cheque</div>
+          <div class="badge badge-info">New</div>
+        </div>
+        <div class="card-body">
+          ${buildChequeHTMLInner(latest)}
+          <div class="flex gap-3 mt-5">
+            <button class="btn btn-success" onclick="depositCheque('${latest.cheque_no}')">Deposit to Wallet</button>
+            <button class="btn btn-ghost" onclick='previewCheque(${JSON.stringify(JSON.stringify(latest))})'>View Full Cheque</button>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+// ---------- BENEFICIARY : RECEIVED ----------
+async function renderReceived() {
+  const incoming = DEMO.cheques.filter(c => c.beneficiary_id === 'ACC-002');
+  $('main').innerHTML = `
+    ${pageHead('Beneficiary · Receiving', 'Received Cheques', 'All cheques received with deposit and verification options.')}
+
+    <div class="card fade-up-1">
+      <div class="card-header">
+        <div class="card-title">All Received Cheques</div>
+      </div>
+      <div class="table-wrap" style="border:0; border-radius:0;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cheque No.</th>
+              <th>Drawer</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Maturity</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${incoming.map(c => `
+              <tr>
+                <td class="mono" style="font-weight:600;">${c.cheque_no}</td>
+                <td>${escapeHtml(c.drawer_name)}</td>
+                <td class="mono tabular" style="font-weight:600;">${fmtMoney(c.amount)}</td>
+                <td>${typeBadge(c.type)}</td>
+                <td class="mono" style="font-size:12px;">${fmtDate(c.maturity_date)}</td>
+                <td>${statusBadge(c.status)}</td>
+                <td>
+                  <div class="flex gap-2">
+                    <button class="btn btn-ghost btn-sm" onclick='previewCheque(${JSON.stringify(JSON.stringify(c))})'>View</button>
+                    ${c.status === 'active' ? `<button class="btn btn-success btn-sm" onclick="depositCheque('${c.cheque_no}')">Deposit</button>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+async function depositCheque(chequeNo) {
+  showToast('⏳ Depositing…');
+  await sleep(900);
+  const c = DEMO.cheques.find(x => x.cheque_no === chequeNo);
+  if (!c) return;
+  c.status = 'deposited';
+  const dest = c.type === 'deferred' ? 'ceiling' : 'balance';
+  showToast(`✓ ${fmtMoney(c.amount)} added to ${dest} · drawer rated A+`);
+  await sleep(700);
+  navigate(STATE.panel);
+}
+
+// ---------- BANK : DASHBOARD ----------
+async function renderBankDash() {
+  const today = DEMO.cheques.filter(c => c.status === 'active' || c.status === 'pending');
+  $('main').innerHTML = `
+    ${pageHead('Bank Officer · Oversight', 'Dashboard', 'Real-time view of cheque activity, system health, and pending operations.')}
+
+    <div class="stats-grid fade-up-1">
+      <div class="stat">
+        <div class="stat-label">Active cheques today</div>
+        <div class="stat-value">${today.length}</div>
+        <div class="stat-meta">Processed across system</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Active value</div>
+        <div class="stat-value mono">${fmtMoney(today.reduce((s,c) => s + c.amount, 0)).replace('JD ','')}<span class="stat-currency">K JOD</span></div>
+        <div class="stat-meta">In circulation now</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Bounced</div>
+        <div class="stat-value" style="color:var(--success);">0</div>
+        <div class="stat-meta stat-trend-up">↓ from 3.8% historical</div>
+      </div>
+      <div class="stat stat-accent">
+        <div class="stat-label">Pending approvals</div>
+        <div class="stat-value">${DEMO.approvals.length}</div>
+        <button class="btn btn-ghost btn-sm mt-3" onclick="navigate('approvals')">Review →</button>
+      </div>
+    </div>
+
+    <div class="split-2 fade-up-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Live Cheque Activity</div>
+          <div class="badge badge-info">Real-time</div>
+        </div>
+        <div class="table-wrap" style="border:0; border-radius:0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Drawer</th>
+                <th>Beneficiary</th>
+                <th>Amount</th>
+                <th>Rating</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${DEMO.cheques.slice(0,5).map(c => `
+                <tr>
+                  <td style="font-size:12px;">${escapeHtml(c.drawer_name).split(' ').slice(0,2).join(' ')}…</td>
+                  <td style="font-size:12px;">${escapeHtml(c.beneficiary_name).split(' ').slice(0,2).join(' ')}…</td>
+                  <td class="mono" style="font-weight:600;">${fmtMoney(c.amount)}</td>
+                  <td><span class="serif" style="font-style:italic; color:var(--success); font-weight:600;">A+</span></td>
+                  <td>${statusBadge(c.status)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Rating Distribution</div>
+          <div class="badge badge-success">System-wide</div>
+        </div>
+        <div class="card-body">
+          ${DEMO.bankDistribution.map(d => `
+            <div class="meter-row">
+              <div class="meter-row-label">
+                <span class="serif" style="font-style:italic; font-weight:600; font-size:15px; color:${d.color};">${d.grade}</span>
+                <span style="margin-left: 8px; font-size: 11px; color: var(--ink-faint);">grade</span>
+              </div>
+              <div class="meter-row-bar">
+                <div class="meter">
+                  <div class="meter-fill" style="width:${d.percent}%; background:${d.color};"></div>
+                </div>
+              </div>
+              <div class="meter-row-value">${d.percent}%</div>
+            </div>
+          `).join('')}
+          <div style="margin-top:var(--s-5); padding:var(--s-4); background:var(--success-soft); border-left: 3px solid var(--success); border-radius: var(--r-md);">
+            <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.12em; color:var(--success); text-transform:uppercase; margin-bottom:4px;">Bounce Rate</div>
+            <div class="serif" style="font-size:24px; font-weight:600; color:var(--success);">0.0%</div>
+            <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;">Down from 3.8% pre-implementation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- BANK : APPROVALS ----------
+async function renderApprovals() {
+  $('main').innerHTML = `
+    ${pageHead('Bank Officer · Approvals', 'Pending Approvals', 'Ceiling increase requests awaiting decision. Review compliance and rating before approving.')}
+
+    <div class="flex-col gap-4 fade-up-1">
+      ${DEMO.approvals.map(a => `
+        <div class="card">
+          <div class="card-body">
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.12em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:4px;">${a.id}</div>
+                <div class="serif" style="font-size:20px; font-weight:600; color:var(--navy);">${escapeHtml(a.company)}</div>
+              </div>
+              <div class="serif" style="font-size:32px; font-weight:700; font-style:italic; color:${ratingColor(a.rating)};">${a.rating}</div>
+            </div>
+
+            <div class="split-2 mb-4">
+              <div>
+                <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:4px;">Current Ceiling</div>
+                <div class="mono" style="font-size:18px; font-weight:600; color:var(--ink);">${fmtMoney(a.currentCeiling)}</div>
+              </div>
+              <div>
+                <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:4px;">Requested</div>
+                <div class="mono" style="font-size:18px; font-weight:600; color:var(--gold-deep);">${fmtMoney(a.requestedCeiling)}</div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="flex justify-between mb-2" style="font-size:12px;">
+                <span style="color:var(--ink-soft);">Compliance score</span>
+                <span class="mono" style="font-weight:600; color:var(--success);">${a.compliance}%</span>
+              </div>
+              <div class="meter">
+                <div class="meter-fill success" style="width:${a.compliance}%;"></div>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <button class="btn btn-success" onclick="processApproval('${a.id}','approved',${a.requestedCeiling})">✓ Approve Full</button>
+              <button class="btn btn-warn-outline" onclick="processApproval('${a.id}','conditional',${Math.round(a.requestedCeiling*0.85)})">Conditional 85%</button>
+              <button class="btn btn-danger" onclick="processApproval('${a.id}','rejected',${a.currentCeiling})">Reject</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+      ${DEMO.approvals.length === 0 ? `
+        <div class="card"><div class="card-body" style="text-align:center; padding:var(--s-9);">
+          <div class="serif" style="font-size:24px; color:var(--ink-faint); font-style:italic;">No pending approvals</div>
+          <div style="margin-top:8px; color:var(--ink-soft);">All ceiling requests have been processed.</div>
+        </div></div>
+      ` : ''}
+    </div>
+  `;
+}
+async function processApproval(id, decision, ceiling) {
+  showToast(`⏳ Processing decision…`);
+  await sleep(700);
+  // Remove from approvals
+  const idx = DEMO.approvals.findIndex(a => a.id === id);
+  if (idx > -1) DEMO.approvals.splice(idx, 1);
+  const msgs = {
+    approved: `✓ Request ${id} approved · ceiling raised to ${fmtMoney(ceiling)}`,
+    conditional: `✓ Request ${id} conditionally approved at 85% (${fmtMoney(ceiling)})`,
+    rejected: `✗ Request ${id} rejected`,
+  };
+  showToast(msgs[decision]);
+  await sleep(500);
+  renderApprovals();
+}
+
+// ---------- BANK : RISK MONITOR ----------
+async function renderRiskMonitor() {
+  $('main').innerHTML = `
+    ${pageHead('Bank Officer · Risk', 'Risk Monitor', 'Distribution of clients across risk zones with proactive alerts.')}
+
+    <div class="stats-grid fade-up-1">
+      <div class="stat">
+        <div class="stat-label">Green zone</div>
+        <div class="stat-value" style="color:var(--success);">94<span class="stat-currency">%</span></div>
+        <div class="stat-meta">Healthy clients</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Yellow zone</div>
+        <div class="stat-value" style="color:var(--warn);">5<span class="stat-currency">%</span></div>
+        <div class="stat-meta">Watch list</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Monitored</div>
+        <div class="stat-value">1<span class="stat-currency">%</span></div>
+        <div class="stat-meta">Restricted activity</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Deficit loans today</div>
+        <div class="stat-value" style="color:var(--success);">0</div>
+        <div class="stat-meta">Zero defaults</div>
+      </div>
+    </div>
+
+    <div class="card fade-up-2">
+      <div class="card-header">
+        <div class="card-title">Active Alerts</div>
+        <div class="badge badge-info">3 alerts</div>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-warn">
+          <div class="alert-icon">!</div>
+          <div class="alert-content">
+            <div class="alert-title">Sewar Mehyar approaching ceiling</div>
+            <div class="alert-msg">Currently at 85% utilization (JD 425,000 / JD 500,000). Recommend pre-approval discussion.</div>
+          </div>
+        </div>
+        <div class="alert alert-success">
+          <div class="alert-icon">✓</div>
+          <div class="alert-content">
+            <div class="alert-title">Abed Mehyar Group rating upgraded</div>
+            <div class="alert-msg">Promoted from A → A+ based on 12-month perfect collection rate. Ceiling auto-eligible for review.</div>
+          </div>
+        </div>
+        <div class="alert alert-info">
+          <div class="alert-icon">i</div>
+          <div class="alert-content">
+            <div class="alert-title">3 cheques due tomorrow</div>
+            <div class="alert-msg">Total value JD 95,500. Auto-payment scheduled. No action required from drawers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- BANK : CENTRAL DATA ----------
+async function renderCentralData() {
+  $('main').innerHTML = `
+    ${pageHead('Bank Officer · Central Bank', 'Aggregate Economic Data', 'For the first time, the Central Bank sees the complete economic picture in real-time.')}
+
+    <div class="stats-grid fade-up-1">
+      <div class="stat">
+        <div class="stat-label">Total deferred value</div>
+        <div class="stat-value mono">8.4<span class="stat-currency">M JOD</span></div>
+        <div class="stat-meta">In circulation</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Bounce rate</div>
+        <div class="stat-value" style="color:var(--success);">0<span class="stat-currency">%</span></div>
+        <div class="stat-meta stat-trend-up">↓ from 3.8% historical</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Active cheques</div>
+        <div class="stat-value">2,847</div>
+        <div class="stat-meta">System-wide</div>
+      </div>
+      <div class="stat stat-accent">
+        <div class="stat-label">A or above</div>
+        <div class="stat-value">89<span class="stat-currency">%</span></div>
+        <div class="stat-meta">Of all clients</div>
+      </div>
+    </div>
+
+    <div class="card mb-6 fade-up-2">
+      <div class="card-header">
+        <div class="card-title">Sector Distribution</div>
+      </div>
+      <div class="card-body">
+        ${DEMO.sectors.map(s => `
+          <div class="sector-row">
+            <div class="sector-name">${s.name}</div>
+            <div class="sector-bar">
+              <div class="sector-fill" style="width:${s.percent}%; background:${s.color};">${s.percent}%</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card fade-up-3" style="background: var(--navy); color: var(--cream); border-color: var(--gold-deep);">
+      <div class="card-body" style="padding: var(--s-8);">
+        <div style="font-family:var(--font-mono); font-size:10px; letter-spacing:0.16em; color:var(--gold); text-transform:uppercase; margin-bottom:var(--s-4);">Patent-Pending Vision</div>
+        <div class="serif" style="font-size:32px; font-weight:600; line-height:1.2; letter-spacing:-0.015em; max-width: 800px;">
+          For the first time — <span style="color:var(--gold); font-style:italic;">The Central Bank sees the complete economic picture.</span>
+        </div>
+        <div style="margin-top:var(--s-5); font-size:14px; color:rgba(255,255,255,0.7); max-width: 700px; line-height: 1.6;">
+          Cross-sector liquidity flows, real-time bounce rates, ceiling utilization trends, and client rating distributions — all visible in one unified ledger. No more lag, no more aggregation delays, no more surprise defaults.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- CHEQUE BUILDER (modal preview) ----------
+function buildChequeHTMLInner(c) {
+  const isInstant = c.type === 'instant';
+  const drawerAr = c.drawer_ar || 'مجموعة عابد مهيار';
+  const beneAr = c.beneficiary_ar || '';
+  return `
+    <div class="cheque" id="chequeEl">
+      <div class="cheque-head">
+        <div class="cheque-head-left">
+          <div class="cheque-bank-mark">JC</div>
+          <div>
+            <div class="cheque-bank-name">Jordan Commercial Bank</div>
+            <div class="cheque-bank-ar">البنك التجاري الأردني</div>
+          </div>
+        </div>
+        <div class="cheque-head-right">
+          <span class="cheque-pill ${isInstant ? 'instant' : 'deferred'}">${isInstant ? 'Instant' : 'Deferred'}</span>
+          <span class="cheque-no">${c.cheque_no}</span>
+        </div>
+      </div>
+      <div class="cheque-body">
+        <div class="cheque-grid-3">
+          <div>
+            <div class="cheque-field-label">Drawer</div>
+            <div class="cheque-field-value">${escapeHtml(c.drawer_name)}</div>
+            <div class="cheque-field-ar">${escapeHtml(drawerAr)}</div>
+          </div>
+          <div>
+            <div class="cheque-field-label">${isInstant ? 'Issue Date' : 'Maturity'}</div>
+            <div class="cheque-field-value cheque-field-value-big cheque-field-mono ${!isInstant ? 'cheque-field-blue' : ''}">${fmtDate(isInstant ? c.issue_date : c.maturity_date)}</div>
+          </div>
+          <div>
+            <div class="cheque-field-label">Issue Date</div>
+            <div class="cheque-field-value cheque-field-mono">${fmtDate(c.issue_date)}</div>
+          </div>
+        </div>
+
+        <div class="cheque-amount">
+          <div class="cheque-amount-label">Amount · JOD</div>
+          <div class="cheque-amount-figure">
+            <span>${Number(c.amount).toLocaleString('en-US')}</span>
+            <span class="cheque-amount-currency">JOD</span>
+          </div>
+          <div class="cheque-amount-words">${numberToWords(c.amount)} Jordanian Dinars Only</div>
+          <div class="cheque-amount-words cheque-amount-words-ar">${toWordsArabic(c.amount)} دينار أردني لا غير</div>
+        </div>
+
+        <div class="cheque-divider"></div>
+
+        <div class="cheque-grid-2">
+          <div>
+            <div class="cheque-field-label">Beneficiary</div>
+            <div class="cheque-field-value cheque-field-value-big">${escapeHtml(c.beneficiary_name)}</div>
+            <div class="cheque-field-ar">${escapeHtml(beneAr)}</div>
+          </div>
+          <div>
+            <div class="cheque-field-label">Purpose</div>
+            <div class="cheque-field-value" style="font-weight:500;">${escapeHtml(c.purpose || '—')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cheque-foot">
+        <span class="verify-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          Verified · موثّق
+        </span>
+        <span class="cheque-hash">SHA-256 · ${c.hash || 'PENDING'}</span>
+        <div class="bank-seal">
+          <div class="bank-seal-inner">JCB<small>VERIFIED</small></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildChequeStandaloneHTML(c) {
+  // Self-contained standalone HTML for download
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Cheque ${c.cheque_no}</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f8f5ee;padding:40px;color:#0a1628;}
+.wrap{max-width:900px;margin:0 auto;}
+.cheque{background:#fefcf7;border:1px solid #e8e2d2;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(10,22,40,0.08);}
+.cheque-head{background:#0a1628;color:#f8f5ee;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;position:relative;}
+.cheque-head::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a98933,#c9a961,#a98933);}
+.head-left{display:flex;align-items:center;gap:12px;}
+.bank-mark{width:32px;height:32px;background:#c9a961;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#0a1628;font-family:'Fraunces',serif;font-weight:700;font-size:16px;font-style:italic;}
+.bank-name{font-family:'Fraunces',serif;font-size:15px;font-weight:600;}
+.bank-ar{font-family:'Tajawal',sans-serif;font-size:11px;color:rgba(255,255,255,0.65);direction:rtl;margin-top:2px;}
+.head-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.pill{padding:4px 10px;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:rgba(201,169,97,0.25);border:1px solid rgba(201,169,97,0.5);color:#c9a961;}
+.cheque-no{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.85);}
+.body{padding:24px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+.label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#8b8674;text-transform:uppercase;margin-bottom:6px;}
+.val{font-size:14px;font-weight:600;color:#0a1628;}
+.val-big{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
+.val-mono{font-family:'JetBrains Mono',monospace;}
+.val-ar{font-family:'Tajawal',sans-serif;font-size:12px;color:#4a5468;margin-top:2px;direction:rtl;}
+.amount{background:#0a1628;color:#f8f5ee;border-radius:6px;padding:20px 24px;margin:20px 0;}
+.amount-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.16em;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:8px;}
+.amount-fig{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;display:flex;align-items:baseline;gap:8px;}
+.amount-cur{font-family:'Fraunces',serif;font-size:14px;font-weight:500;font-style:italic;color:rgba(255,255,255,0.7);}
+.amount-words{font-family:'Fraunces',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,0.7);margin-top:12px;}
+.amount-words-ar{font-family:'Tajawal',sans-serif;font-size:11px;color:rgba(255,255,255,0.65);direction:rtl;margin-top:4px;font-style:normal;}
+.divider{height:1px;background:#e8e2d2;margin:20px 0;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.foot{background:#f1ece0;border-top:1px solid #e8e2d2;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.verify{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:100px;background:#d6ebe2;color:#1e6f5c;font-size:11px;font-weight:600;}
+.hash{font-family:'JetBrains Mono',monospace;font-size:9px;color:#8b8674;letter-spacing:0.04em;}
+.seal{width:56px;height:56px;border-radius:50%;background:#fefcf7;border:2px dashed #c9a961;display:flex;align-items:center;justify-content:center;}
+.seal-text{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:11px;color:#a98933;text-align:center;line-height:1;}
+.seal-text small{display:block;font-family:'JetBrains Mono',monospace;font-size:7px;font-style:normal;font-weight:500;letter-spacing:0.1em;margin-top:2px;}
+.foot-text{margin-top:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:#8b8674;letter-spacing:0.05em;}
+@media print{body{padding:0;background:white;}.cheque{box-shadow:none;}}
+</style></head><body><div class="wrap">
+<div class="cheque">
+<div class="cheque-head">
+<div class="head-left"><div class="bank-mark">JC</div><div><div class="bank-name">Jordan Commercial Bank</div><div class="bank-ar">البنك التجاري الأردني</div></div></div>
+<div class="head-right"><span class="pill">${c.type === 'instant' ? 'Instant' : 'Deferred'}</span><span class="cheque-no">${c.cheque_no}</span></div>
+</div>
+<div class="body">
+<div class="g3">
+<div><div class="label">Drawer</div><div class="val">${escapeHtml(c.drawer_name)}</div><div class="val-ar">${escapeHtml(c.drawer_ar || 'مجموعة عابد مهيار')}</div></div>
+<div><div class="label">${c.type === 'instant' ? 'Issue Date' : 'Maturity'}</div><div class="val val-big val-mono">${fmtDate(c.type === 'instant' ? c.issue_date : c.maturity_date)}</div></div>
+<div><div class="label">Issue Date</div><div class="val val-mono">${fmtDate(c.issue_date)}</div></div>
+</div>
+<div class="amount"><div class="amount-label">Amount · JOD</div><div class="amount-fig"><span>${Number(c.amount).toLocaleString('en-US')}</span><span class="amount-cur">JOD</span></div><div class="amount-words">${numberToWords(c.amount)} Jordanian Dinars Only</div><div class="amount-words-ar">${toWordsArabic(c.amount)} دينار أردني لا غير</div></div>
+<div class="divider"></div>
+<div class="g2">
+<div><div class="label">Beneficiary</div><div class="val val-big">${escapeHtml(c.beneficiary_name)}</div><div class="val-ar">${escapeHtml(c.beneficiary_ar || '')}</div></div>
+<div><div class="label">Purpose</div><div class="val" style="font-weight:500;">${escapeHtml(c.purpose || '—')}</div></div>
+</div>
+</div>
+<div class="foot">
+<span class="verify">✓ Verified · موثّق</span>
+<span class="hash">SHA-256 · ${c.hash || 'PENDING'}</span>
+<div class="seal"><div class="seal-text">JCB<small>VERIFIED</small></div></div>
+</div>
+</div>
+<div class="foot-text">© Digital Check Ecosystem · Abdelqader Nayef Mehyar · Patent Pending · All Rights Reserved 2026</div>
+</div></body></html>`;
+}
+
+function previewCheque(chequeJson) {
+  const c = typeof chequeJson === 'string' ? JSON.parse(chequeJson) : chequeJson;
+  showChequePreview(c);
+}
+
+function showChequePreview(c) {
+  STATE.currentCheque = c;
+  $('modalSub').textContent = `${c.cheque_no} · ${c.type === 'instant' ? 'Instant' : 'Deferred'}`;
+  $('modalBody').innerHTML = buildChequeHTMLInner(c);
+  $('modalOverlay').classList.add('open');
+}
+function closeModal() { $('modalOverlay').classList.remove('open'); }
+
+function downloadHTML() {
+  const c = STATE.currentCheque;
+  if (!c) return;
+  const html = buildChequeStandaloneHTML(c);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${c.cheque_no}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`✓ Downloaded ${c.cheque_no}.html`);
+}
+
+async function downloadPDF() {
+  const c = STATE.currentCheque;
+  if (!c) return;
+  if (!window.jspdf) {
+    showToast('⚠ PDF library not loaded');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a5' });
+  const W = 210, H = 148;
+
+  // Background
+  doc.setFillColor(254, 252, 247);
+  doc.rect(0, 0, W, H, 'F');
+
+  // Header navy
+  doc.setFillColor(10, 22, 40);
+  doc.rect(0, 0, W, 26, 'F');
+
+  // Gold stripe
+  doc.setFillColor(201, 169, 97);
+  doc.rect(0, 25, W, 1, 'F');
+
+  // Bank mark
+  doc.setFillColor(201, 169, 97);
+  doc.roundedRect(8, 8, 10, 10, 2, 2, 'F');
+  doc.setTextColor(10, 22, 40);
+  doc.setFontSize(11);
+  doc.setFont('times', 'bolditalic');
+  doc.text('JC', 13, 15.5, { align: 'center' });
+
+  // Bank name
+  doc.setTextColor(248, 245, 238);
+  doc.setFontSize(13);
+  doc.setFont('times', 'bold');
+  doc.text('Jordan Commercial Bank', 22, 13);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(180, 175, 160);
+  doc.text('JCB · DIGITAL CHECK INFRASTRUCTURE', 22, 19);
+
+  // Type pill
+  const isInstant = c.type === 'instant';
+  doc.setFillColor(isInstant ? 30 : 201, isInstant ? 100 : 169, isInstant ? 140 : 97);
+  doc.roundedRect(W - 50, 8, 30, 7, 3.5, 3.5, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.text(isInstant ? 'INSTANT' : 'DEFERRED', W - 35, 12.5, { align: 'center' });
+
+  // Cheque no
+  doc.setTextColor(220, 215, 200);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.text(c.cheque_no, W - 35, 20, { align: 'center' });
+
+  // Body labels
+  doc.setTextColor(139, 134, 116);
+  doc.setFontSize(6.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DRAWER', 12, 36);
+  doc.text(isInstant ? 'ISSUE DATE' : 'MATURITY', W/2 - 18, 36);
+  doc.text('ISSUE DATE', W - 50, 36);
+
+  // Body values
+  doc.setTextColor(10, 22, 40);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text(c.drawer_name, 12, 42);
+  doc.setFontSize(13);
+  doc.setFont('courier', 'bold');
+  doc.text(fmtDate(isInstant ? c.issue_date : c.maturity_date), W/2 - 18, 43);
+  doc.setFontSize(11);
+  doc.text(fmtDate(c.issue_date), W - 50, 42);
+
+  // Amount block (navy)
+  doc.setFillColor(10, 22, 40);
+  doc.roundedRect(8, 52, W - 16, 30, 3, 3, 'F');
+  doc.setTextColor(160, 155, 140);
+  doc.setFontSize(6);
+  doc.setFont('helvetica', 'bold');
+  doc.text('AMOUNT · JOD', 14, 60);
+  doc.setTextColor(248, 245, 238);
+  doc.setFontSize(28);
+  doc.setFont('courier', 'bold');
+  doc.text(Number(c.amount).toLocaleString('en-US'), 14, 73);
+  doc.setFontSize(8);
+  doc.setFont('times', 'italic');
+  doc.setTextColor(220, 215, 200);
+  doc.text(numberToWords(c.amount) + ' Jordanian Dinars Only', W - 14, 78, { align: 'right', maxWidth: 80 });
+
+  // Beneficiary section
+  doc.setTextColor(139, 134, 116);
+  doc.setFontSize(6.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BENEFICIARY', 12, 95);
+  doc.text('PURPOSE', W/2 + 4, 95);
+  doc.setTextColor(10, 22, 40);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text(c.beneficiary_name, 12, 102, { maxWidth: W/2 - 16 });
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(c.purpose || '—', W/2 + 4, 102, { maxWidth: W/2 - 12 });
+
+  // Footer
+  doc.setFillColor(241, 236, 224);
+  doc.rect(0, H - 22, W, 22, 'F');
+  doc.setDrawColor(232, 226, 210);
+  doc.line(0, H - 22, W, H - 22);
+
+  // Verify pill
+  doc.setFillColor(214, 235, 226);
+  doc.roundedRect(8, H - 16, 38, 8, 4, 4, 'F');
+  doc.setTextColor(30, 111, 92);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.text('✓ VERIFIED · TAMPER-EVIDENT', 27, H - 10.5, { align: 'center' });
+
+  // Hash
+  doc.setTextColor(139, 134, 116);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(6);
+  doc.text(`SHA-256 · ${c.hash || 'PENDING'}`, 50, H - 11);
+  doc.text(`DS-${c.cheque_no.slice(-5)} · DIGITALLY SIGNED`, 50, H - 7);
+
+  // Bank seal
+  doc.setDrawColor(201, 169, 97);
+  doc.setLineDashPattern([1, 1], 0);
+  doc.circle(W - 14, H - 11, 6, 'D');
+  doc.setLineDashPattern([], 0);
+  doc.setTextColor(169, 137, 51);
+  doc.setFont('times', 'bolditalic');
+  doc.setFontSize(8);
+  doc.text('JCB', W - 14, H - 10, { align: 'center' });
+  doc.setFontSize(4);
+  doc.setFont('helvetica', 'normal');
+  doc.text('VERIFIED', W - 14, H - 7.5, { align: 'center' });
+
+  // IP
+  doc.setTextColor(184, 178, 154);
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'normal');
+  doc.text('© Digital Check Ecosystem · Abdelqader Nayef Mehyar · Patent Pending · All Rights Reserved 2026', W/2, H - 1, { align: 'center' });
+
+  doc.save(`${c.cheque_no}.pdf`);
+  showToast(`✓ Downloaded ${c.cheque_no}.pdf`);
+}
+
+// ---------- INIT ----------
+window.addEventListener('DOMContentLoaded', async () => {
+  await bootLoader();
+  switchRole('drawer');
+});
+</script>
+
+</body>
+</html>
